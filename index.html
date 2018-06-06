@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Interactive map protoyype v1</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
+    <link href="https://fonts.googleapis.com/css?family=Sunflower:700" rel="stylesheet">
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+    <link href='/css/main.css' rel='stylesheet' />
+  
+</head>
+
+<body>
+
+    <div class="info">
+        <h1>Interactive map prototpe</h1>
+        <p>Hover over the markers to follow the journey... </p>
+    </div>
+
+    <div id='map'></div>
+    <script>
+
+       var marker = document.getElementById('marker');
+       console.log(marker);
+
+        mapboxgl.accessToken =
+            'pk.eyJ1IjoiamltaXN3ZWxscyIsImEiOiJjamkyNzY3bDQxMmd5M3BybnRoM2F4MnczIn0.45nIrWlSTSiTwZT8tqWXug';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/jimiswells/cji33q2970nb32rk72c9gb0e3',
+            center: [-90.96, -0.40],
+            zoom: 8
+        });
+
+        img1Src = '/img/surf.jpeg'
+        img2Src = '/img/galapogos.jpg'
+        img3Src = '/img/boat.jpeg'
+        
+        coords1 ='-91.3952,0.914572'
+        coords2 ='-90.3295,0.634447'
+        coords3 ='-91.34,0.01647949'
+
+        var animationStep = 70;
+        
+        function enableLineAnimation(layerId) {
+            var step = 0;
+            let dashArraySeq = [
+              [0, 4, 3],
+              [1, 4, 2],
+              [2, 4, 1],
+              [3, 4, 0],
+              [0, 1, 3, 3],
+              [0, 2, 3, 2],
+              [0, 3, 3, 1]
+            ];
+            setInterval(() => {
+                step = (step + 1) % dashArraySeq.length;
+                map.setPaintProperty(layerId, 'line-dasharray', dashArraySeq[step]);
+              }, animationStep);
+          }
+        
+        
+
+        map.on('load', function () {
+
+
+            map.addLayer({
+        "id": "route",
+        "type": "line",
+        "source": {
+            "type": "geojson",
+            "data": {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                    [-91.395263671875, - 0.9145729757782163],
+                    [-90.32958984375, - 0.6344474832838974],
+                    [-91.34033203125, 0.01647949196029245]
+                        
+                    ]
+                }
+            }
+        },
+        "layout": {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        "paint": {
+            "line-color": "#fff",
+            "line-width": {
+            'base': .7,
+            'stops': [
+                [14, 5],
+                [18, 20],
+            ],
+        },
+            "line-dasharray": [0.1, 1.8]
+        }
+        
+    });
+    
+
+    //enableLineAnimation('route');
+
+            map.loadImage('/img/marker.png', function (error, image) {
+                if (error) throw error;
+                map.addImage('marker', image);
+                // Add a symbol layer.
+                map.addLayer({
+                    "id": "symbols",
+                    "type": "symbol",
+                    "source": {
+                        "type": "geojson",
+                        "data": {
+                            "type": "FeatureCollection",
+                            "features": [{
+                                    "type": "Feature",
+                                    "properties": {
+                                        "description": "<h1>Volcan Sierra Negra</h1><span>1_8_2018 // -91.3952, 0.914572</span><img src=" + img1Src +
+                                            "> </p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut consectetur debitis nesciunt vitae magni numquam odio blanditiis dolores odit fugit?<a>See More</a></p>",
+                                        "icon": "bar",
+                                        "ID":"marker"
+                                    },
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [-91.395263671875, -
+                                            0.9145729757782163
+
+                                        ]
+                                    }
+                                },
+                                {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "description": "<h1>Isla Santa Cruz</h1><span>1_8_2018 // -90.3295, 0.634447</span><img src=" + img2Src +
+                                            "> </p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut consectetur debitis nesciunt vitae magni numquam odio blanditiis dolores odit fugit?<a>See More</a></p>",
+                                    },
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [-90.32958984375, -
+                                            0.6344474832838974
+                                        ]
+                                    }
+                                },
+                                {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "description": "<h1>Volcan Wolf</h1><span>1_8_2018 // -91.34, 0.01647949</span><img src=" + img3Src +
+                                            "> </p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut consectetur debitis nesciunt vitae magni numquam odio blanditiis dolores odit fugit?<a>See More</a></p>",
+                                    },
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [-91.34033203125,
+                                            0.01647949196029245
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "layout": {
+                        "icon-image": "marker",
+                        "icon-size": .25
+                        
+                    }
+                })
+            });
+
+
+
+            // When a click event occurs on a feature in the places layer, open a popup at the
+            // location of the feature, with description HTML from its properties.
+            map.on('mouseenter', 'symbols', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var description = e.features[0].properties.description;
+
+                // Ensure that if the map is zoomed out such that multiple
+                // copies of the feature are visible, the popup appears
+                // over the copy being pointed to.
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                map.on('mouseleave', 'symbols', function (e) {
+
+                    popup.remove();
+                })
+
+                var popup = new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            // Change the cursor to a pointer when the mouse is over the places layer.
+            map.on('mouseenter', 'symbols', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'symbols', function () {
+                map.getCanvas().style.cursor = '';
+            });
+        });
+    </script>
+
+</body>
+
+</html>
